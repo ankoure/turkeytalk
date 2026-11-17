@@ -1,0 +1,20 @@
+scenario,step,acres_remaining,acres_removed,acres_only_this_rule
+firearm,Cambridge city limits,4561.18,0.0,
+firearm,citywide discharge ban,0.0,4561.18,
+firearm,dwellings,0.0,0.0,
+firearm,parks,0.0,0.0,
+firearm,roads,0.0,0.0,
+firearm,water,0.0,0.0,
+firearm,slivers under 10000 sq ft,0.0,0.0,
+archery_500ft,Cambridge city limits,4561.18,0.0,
+archery_500ft,dwellings,501.48,4059.69,309.75
+archery_500ft,parks,193.53,307.96,76.36
+archery_500ft,roads,132.76,60.77,41.81
+archery_500ft,water,20.12,112.64,112.64
+archery_500ft,slivers under 10000 sq ft,19.98,0.15,
+archery_250ft,Cambridge city limits,4561.18,0.0,
+archery_250ft,dwellings,1014.53,3546.65,251.08
+archery_250ft,parks,518.9,495.62,150.41
+archery_250ft,roads,284.09,234.82,180.36
+archery_250ft,water,78.79,205.29,205.29
+archery_250ft,slivers under 10000 sq ft,78.08,0.71,

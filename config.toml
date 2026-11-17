@@ -1,0 +1,97 @@
+# Turkey constraint stack — every regulatory number lives here, not in code.
+# Distances are US survey feet (the analysis CRS is EPSG:2249, MA Mainland ftUS).
+#
+# Rule citations are paraphrased from the talk's references (see docs/methodology.md).
+# Re-verify against the current text before treating any output as current law.
+
+[project]
+crs = "EPSG:2249"             # NAD83 / Massachusetts Mainland (ftUS)
+raw_dir = "data/raw"
+out_dir = "outputs"
+gpkg = "outputs/turkeytalk.gpkg"
+min_candidate_sqft = 10000    # drop slivers smaller than ~0.23 ac; nobody hunts from a 3 ft gap
+
+# ---------------------------------------------------------------- scenarios
+# One run per scenario. The firearm case reproduces slide 4: the citywide
+# discharge ban zeroes the city before any other layer is touched.
+
+[[scenario]]
+id = "firearm"
+label = "Firearm (citywide discharge ban)"
+citywide_ban = true
+
+[[scenario]]
+id = "archery_500ft"
+label = "Archery, 500 ft dwelling setback (current)"
+dwelling_setback_ft = 500
+
+[[scenario]]
+id = "archery_250ft"
+label = "Archery, 250 ft dwelling setback (April 2026 bill)"
+dwelling_setback_ft = 250
+
+# ---------------------------------------------------------------- rules
+# Order here is the order of the waterfall in outputs/summary.csv.
+
+[rules.dwellings]
+# Setback from any dwelling in use (MGL c.131 §58; 321 CMR 3.00). Distance comes from the scenario.
+# A Cambridge building is a dwelling if its land-use parcel has residential units or group quarters.
+cambridge_building_types = ["BLDG", "MOBILE"]
+# ...or if its parcel is a use where people sleep but the assessor records 0 units.
+# Without this, MIT and Harvard dorms vanish (campus parcels lump dorms with labs)
+# and Killian Court / Harvard Yard come out as "candidates". Every building on
+# these parcels counts as a possible dwelling.
+overnight_use_categories = ["Higher Education", "Education Residential", "Education with Commercial", "Health", "Hotel", "Charitable/Religious"]
+# Neighbor-town structures (MassGIS) carry no use code, so ALL of them count as
+# dwellings, minus sheds below this footprint. Conservative on purpose.
+neighbor_min_footprint_sqft = 200
+
+[rules.parks]
+# No hunting on public parkland. Open-space polygons with these OWNER values are erased.
+# POPS = privately owned public space: public access, so treated as parkland.
+excluded_owners = ["City", "Cambridge", "State", "Federal", "School Dep", "Belmont", "POPS", "Easement", ""]
+
+[rules.roads]
+# Cambridge §9.16.060 bans bows in streets and on bridges (0 ft: the surface itself).
+# MGL c.131 §58 bars releasing an arrow within 150 ft of a hard-surfaced highway.
+street_types = ["RD-PAVED", "RD-ALLEY", "RD-BRIDGE", "RD-TRAF-ISLAND", "RD-UNPAVED"]
+hard_surface_types = ["RD-PAVED", "RD-ALLEY", "RD-BRIDGE"]
+hard_surface_setback_ft = 150
+include_bridges_layer = true
+
+[rules.water]
+# All mapped water bodies are erased (you cannot stand in the Charles).
+# Drinking-water reservoirs also get a protective buffer; 400 ft mirrors the
+# MassDEP Zone A width for surface-water supplies (310 CMR 22.02).
+reservoir_names = ["Fresh Pond"]
+reservoir_buffer_ft = 400
+
+[rules.permission]
+# Not an erase: every surviving acre is split by parcel and tagged with who has to say yes.
+# tax_status (land-use layer) -> owner class shown on the map and in candidate_parcels.
+owner_class = { "City NonTax" = "City of Cambridge", "State NonTax" = "Commonwealth", "Federal NonTax" = "Federal", "Authority NonTax" = "Public authority", "Educ NonTax" = "Educational institution", "Religious NonTax" = "Religious institution", "Other NonTax" = "Other nonprofit" }
+default_owner_class = "Private (taxable)"
+
+# ---------------------------------------------------------------- sources
+[sources.cambridge]
+# City of Cambridge GIS open data, pinned to a commit so reruns are reproducible.
+repo = "cambridgegis/cambridgegis_data"
+commit = "f5d7cc60fe95d6c80761d36fb047a1393eb17bb0"   # 2026-11-03
+
+[sources.cambridge.layers]
+boundary   = "Boundary/City_Boundary/BOUNDARY_CityBoundary.geojson"
+buildings  = "Basemap/Buildings/BASEMAP_Buildings.geojson"
+land_use   = "CDD/Land_Use_FY2027/CDD_LandUseFY2027.geojson"
+open_space = "Recreation/Open_Space/RECREATION_OpenSpace.geojson"
+roads      = "Basemap/Roads/BASEMAP_Roads.geojson"
+bridges    = "Basemap/Bridges/BASEMAP_Bridges.geojson"
+water      = "Hydro/Water_Bodies/HYDRO_WaterBodies.geojson"
+
+[sources.massgis_buildings]
+# MassGIS Building Structures (2-D). Only structures OUTSIDE Cambridge are pulled,
+# within ring_ft of the city line, so dwellings across the border still cast setbacks.
+url = "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Building_Structures/FeatureServer/0/query"
+cambridge_town_id = 49
+ring_ft = 600          # must be >= the largest dwelling setback in any scenario
+tile_deg = 0.008       # query tile size; the service times out on a citywide bbox
+workers = 4

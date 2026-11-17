@@ -1,0 +1,14 @@
+[project]
+name = "turkeytalk"
+version = "0.1.0"
+description = "Constraint-stack spatial analysis: can you hunt a turkey in Cambridge, MA?"
+requires-python = ">=3.11"
+dependencies = [
+    "geopandas>=1.0",
+    "pyogrio>=0.9",
+    "shapely>=2.0",
+    "matplotlib>=3.8",
+]
+
+[tool.uv]
+package = false
