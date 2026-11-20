@@ -104,6 +104,7 @@ All of it is bulk-downloaded from MassGIS's S3 bucket. The per-town parcel links
 
    Pieces inside named open space keep the site name.
 5. **Web** (`ma web`). Each town's candidates are simplified to 3 m and stored once, tagged with the strictest scenario they survive. The scenarios nest (firearm ⊆ archery 500 ft ⊆ archery 250 ft), local rules included. Geometry is delta-encoded as integers at 1e-5 degrees, which brings the whole state to 52 MB. Towns with local rules also carry the state-only acreage, shown in the town panel.
+6. **Who to ask** (in the browser). Clicking candidate land queries MassGIS's statewide tax-parcel service at that point and shows the lot's owner of record and mailing address, with an option to draft a permission letter. The piece's category comes from an exact point-in-polygon test on the candidate data, not from Leaflet's hit test, which also counts clicks a few pixels outside a shape's edge.
 
 ## Validation against the Cambridge version
 
@@ -132,6 +133,7 @@ That dwelling agreement came only after the units fix described above. Before it
 - **Road surfaces come from centerlines.** Each is buffered by half its recorded width, or 12 ft where none is recorded, so a wide road with no width recorded is drawn too narrow by a few feet.
 - **Setback waivers aren't modeled.** Both setbacks can be waived by the owner or occupant; the map assumes nobody has.
 - **Watershed land needs a DCR permit.** Dropping Zone A puts the Quabbin, Wachusett and Ware River lands back on the map. Hunting there requires DCR's watershed hunting access permit and follows DCR's own area rules.
+- **Owner lookups are live, the analysis isn't.** The parcel service returns the current assessing year, which can be newer than the parcels used to build the candidates (FY2018–FY2027 by town), so a lot's owner or boundary can differ slightly from what the analysis saw.
 - **Seasons, zones, licenses, legal days and hours, and posted land** are not on the map.
 
 ## Reproducing

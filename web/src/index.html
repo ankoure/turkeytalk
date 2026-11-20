@@ -1,4 +1,5 @@
 <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Can I Hunt My Turkey Here?</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -160,6 +161,82 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
 .tt-name { font-weight: 600; }
 .tt-val { color: var(--ink-2); font-variant-numeric: tabular-nums; }
 
+/* who to ask: parcel owner card */
+.hint { color: var(--ink-2); font-size: 12px; }
+.parcel { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--line); border-left: 4px solid var(--ink); border-radius: 8px; background: var(--bg); }
+.parcel.dfg { border-left-color: var(--dfg); } .parcel.pub { border-left-color: var(--pub); } .parcel.priv { border-left-color: var(--priv); }
+.parcel h3 { margin: 0; }
+.parcel .site { color: var(--ink-2); margin-top: -6px; }
+.parcel .owner { font-family: var(--display); font-size: 21px; font-weight: 600; line-height: 1.15; overflow-wrap: anywhere; }
+.parcel dl { display: grid; grid-template-columns: auto 1fr; gap: 3px 12px; margin: 6px 0 0; }
+.parcel dt { color: var(--ink-2); font-size: 12px; padding-top: 1px; }
+.parcel dd { margin: 0; overflow-wrap: anywhere; }
+.parcel .rec { display: grid; gap: 8px; }
+.parcel .rec + .rec { border-top: 1px solid var(--line); padding-top: 12px; }
+.parcel .fine { color: var(--ink-2); font-size: 12px; }
+.btn {
+  font: inherit; font-weight: 600; color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+  border-radius: 8px; padding: 8px 14px; cursor: pointer; justify-self: start;
+}
+.btn:hover { border-color: var(--ink); }
+.btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.btn.primary { background: var(--ink); color: var(--panel); border-color: var(--ink); }
+.btn.sm { padding: 8px 12px; font-size: 12px; margin-top: 8px; }
+
+/* permission letter dialog: form on the left, live paper preview on the right */
+dialog.letter {
+  width: min(1120px, 96vw); height: min(92vh, 980px); max-width: none; max-height: none; padding: 0;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--panel); color: var(--ink);
+}
+dialog.letter::backdrop { background: rgba(10, 12, 11, .45); }
+.dlg { height: 100%; display: grid; grid-template-rows: auto 1fr auto; }
+.dlg-head, .dlg-foot { display: flex; align-items: center; gap: 10px; padding: 12px 18px; }
+.dlg-head { border-bottom: 1px solid var(--line); }
+.dlg-head h2 { flex: 1; }
+.dlg-foot { border-top: 1px solid var(--line); flex-wrap: wrap; }
+.dlg-body { display: grid; grid-template-columns: 300px 1fr; min-height: 0; }
+.hunter { overflow-y: auto; padding: 16px 18px; border-right: 1px solid var(--line); display: grid; gap: 10px; align-content: start; }
+.hunter label { display: grid; gap: 3px; font-size: 12px; color: var(--ink-2); font-weight: 600; }
+.hunter :is(input, select) { font: inherit; font-weight: 400; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; min-width: 0; }
+.hunter :is(input, select):focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; border-color: transparent; }
+.hunter .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.paper { overflow-y: auto; background: var(--bg); padding: 20px; }
+.doc { display: grid; gap: 20px; justify-items: center; }
+.page {
+  width: 100%; max-width: 720px; background: #fff; color: #16191a; padding: 56px 64px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, .15); font-size: 13.5px; line-height: 1.55;
+}
+.page p { margin: 0 0 12px; }
+.page ul { margin: 0 0 12px; padding-left: 20px; }
+.page .addr { margin-bottom: 20px; }
+.page .re { font-weight: 600; margin-bottom: 18px; }
+.page h4 { margin: 0 0 18px; font-family: var(--display); font-size: 26px; font-weight: 600; }
+.page .blank { display: inline-block; min-width: 190px; border-bottom: 1px solid #16191a; height: 1.15em; vertical-align: -3px; }
+.page .blank.s { min-width: 100px; }
+.page .blank.l { display: block; width: 100%; margin-top: 18px; }
+.page .sig { margin-top: 30px; }
+.page .fine { font-size: 11.5px; color: #4b504d; margin-top: 26px; }
+#copied { color: var(--ink-2); font-size: 12px; }
+#print-root { display: none; }
+
+@media (max-width: 860px) {
+  dialog.letter { width: 100vw; height: 100dvh; border-radius: 0; }
+  .dlg-body { grid-template-columns: 1fr; overflow-y: auto; }
+  .hunter { overflow: visible; border-right: 0; border-bottom: 1px solid var(--line); }
+  .paper { overflow: visible; padding: 12px; }
+  .page { padding: 28px 22px; }
+}
+
+/* Printing a letter: only the letter pages, one per sheet. */
+@media print {
+  @page { margin: 0.8in; }
+  body.printing { background: #fff; }
+  body.printing > *:not(#print-root) { display: none !important; }
+  body.printing #print-root { display: block; }
+  #print-root .page { box-shadow: none; padding: 0; max-width: none; font-size: 11.5pt; }
+  #print-root .page + .page { break-before: page; }
+}
+
 @media (max-width: 860px) {
   .app { grid-template-columns: 1fr; grid-template-rows: 58% 1fr; height: 100%; }
   .mapwrap { order: 1; }
@@ -189,6 +266,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     </div>
 
     <section id="view-state" aria-live="polite"></section>
+    <section id="view-parcel" aria-live="polite" hidden></section>
     <section id="view-town" aria-live="polite" hidden></section>
     <section id="legend"></section>
 
@@ -200,9 +278,10 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
         <li><strong>Thanksgiving.</strong> Fall turkey season 2026 (Zones 1–13) is archery-only on Thursday, Nov 26. Shotguns are legal only Oct 19–31.</li>
         <li><strong>Dwellings</strong> are buildings on parcels the assessor codes as residential, plus hotels, dorms, nursing homes, rectories and similar. Buildings on parcels with no use code are treated as dwellings.</li>
         <li><strong>Not on this map:</strong> town bylaws (except Cambridge's, applied on top of state law), seasons and zones, licenses and permits, legal days and hours, posted land, and safe lines of fire. Many cities and towns ban discharge outright.</li>
+        <li><strong>Who to ask.</strong> Clicking candidate land looks up that spot's owner of record in MassGIS's statewide assessor parcels, live, and can draft a letter asking permission. This site stores no owner data, and what you type into a letter stays in your browser.</li>
         <li><strong>Every acre has an owner.</strong> MassWildlife lands are generally open to hunting under state rules. State law requires permission on private land only once it's posted (MGL c.131 §36), though some towns require written permission. Ask first anyway.</li>
       </ul>
-      <p class="sources">Data: MassGIS (structures, L3 parcels, protected open space, 1:25k hydrography, town boundaries), MassDOT Road Inventory. Analysis from a lightning talk at Fall NEARC 2026; method and code in the project repository.</p>
+      <p class="sources">Data: MassGIS (structures, L3 parcels, protected open space, 1:25k hydrography, town boundaries), MassDOT Road Inventory. Owner lookups: MassGIS Property Tax Parcels, queried live. Analysis from a lightning talk at Fall NEARC 2026; method and code in the project repository.</p>
     </details>
   </aside>
 
@@ -212,6 +291,45 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     <div class="status" id="status" hidden></div>
   </main>
 </div>
+
+<dialog class="letter" id="letter" aria-labelledby="letter-title">
+  <div class="dlg">
+    <div class="dlg-head">
+      <h2 id="letter-title">Ask permission</h2>
+      <button type="button" class="btn" id="letter-close">Close</button>
+    </div>
+    <div class="dlg-body">
+      <form class="hunter" id="hunter" autocomplete="on">
+        <p class="hint">The letter fills in as you type. Your details are saved in this browser only and never sent anywhere.</p>
+        <label>Your name <input id="h-name" autocomplete="name"></label>
+        <label>Street address <input id="h-street" autocomplete="street-address"></label>
+        <label>City, state, ZIP <input id="h-cityline" placeholder="Worcester, MA 01602"></label>
+        <div class="row">
+          <label>Phone <input id="h-phone" type="tel" autocomplete="tel"></label>
+          <label>Email <input id="h-email" type="email" autocomplete="email"></label>
+        </div>
+        <label>MA hunting license no. <input id="h-license" placeholder="Optional"></label>
+        <div class="row">
+          <label>Hunting with
+            <select id="h-gear"><option value="archery">A bow</option><option value="firearm">A shotgun</option></select>
+          </label>
+          <label>Companions
+            <select id="h-companions"><option value="0">None</option><option value="1">1</option><option value="2">2</option><option value="3">3</option></select>
+          </label>
+        </div>
+        <label>Dates <input id="h-dates"></label>
+        <label>Greeting <input id="h-greeting"></label>
+      </form>
+      <div class="paper"><div class="doc" id="doc"></div></div>
+    </div>
+    <div class="dlg-foot">
+      <button type="button" class="btn primary" id="letter-print">Print or save as PDF</button>
+      <button type="button" class="btn" id="letter-copy">Copy as text</button>
+      <span id="copied" role="status"></span>
+    </div>
+  </div>
+</dialog>
+<div id="print-root"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -228,10 +346,23 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     conservation: { label: "Land trust or nonprofit", sw: "pub", who: "Hunting only where the owner allows it." },
     private:      { label: "Private or institutional", sw: "priv", who: "Open unless posted (c.131 §36) or a town bylaw says otherwise. Ask first." },
   };
+  // Owner lookups go straight to MassGIS's statewide assessor parcels (live, CORS-enabled),
+  // so this site never stores owner names or addresses.
+  const PARCELS = "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0/query";
+  const PARCEL_FIELDS = "LOC_ID,MAP_PAR_ID,POLY_TYPE,TOWN_ID,SITE_ADDR,CITY,OWNER1,OWN_ADDR,OWN_CITY,OWN_STATE,OWN_ZIP,OWN_CO,LOT_SIZE,LOT_UNITS,USE_CODE,USE_DESC,FY";
+  // Fall 2026 wild turkey season, Zones 1-13 (321 CMR 3.00): archery Oct 5 - Nov 28; shotgun Oct 19-31 only.
+  const SEASON = {
+    archery: { gear: "a bow", dates: "the fall season, October 5 to November 28, 2026", keep: "more than 500 feet from any home" },
+    firearm: { gear: "a shotgun", dates: "the fall shotgun season, October 19 to 31, 2026", keep: "more than 500 feet from any building" },
+  };
+  const weaponOf = (sid) => sid.startsWith("firearm") ? "firearm" : "archery";
+  const HUNTER_KEY = "turkey.hunter.v1";
+  const HUNTER_FIELDS = ["name", "street", "cityline", "phone", "email", "license", "greeting"];   // remembered between letters
+
   const BREAKS = [1, 5, 10, 20, 35, 50];   // % of town area; 7 classes
   const BREAK_LABELS = ["<1%", "1", "5", "10", "20", "35", "50%+"];
 
-  const state = { scenario: "archery_500ft", town: null, data: null, cache: new Map() };
+  const state = { scenario: "archery_500ft", town: null, data: null, cache: new Map(), parcel: null };
   const $ = (id) => document.getElementById(id);
   const css = () => { const s = getComputedStyle(document.documentElement); return (n) => s.getPropertyValue(n).trim(); };
   let tok = css();
@@ -256,15 +387,16 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
   L.control.zoom({ position: "topright" }).addTo(map);   // top-left holds the "All of Massachusetts" button
   map.attributionControl.setPrefix(false).addAttribution("MassGIS · MassDOT · MassDEP");
   const canvas = L.canvas({ padding: 0.3, tolerance: 3 });
-  for (const [name, z] of [["towns", 400], ["statewater", 405], ["townwater", 410], ["roads", 420], ["cands", 430], ["outline", 440]]) {
+  for (const [name, z] of [["towns", 400], ["statewater", 405], ["townwater", 410], ["roads", 420], ["cands", 430], ["outline", 440], ["parcel", 445]]) {
     map.createPane(name).style.zIndex = z;
   }
   map.getPane("roads").style.pointerEvents = "none";
   map.getPane("statewater").style.pointerEvents = "none";
   map.getPane("townwater").style.pointerEvents = "none";
   map.getPane("outline").style.pointerEvents = "none";
+  map.getPane("parcel").style.pointerEvents = "none";
 
-  let townLayer, stateCtx, townCtx, candLayer, outline;
+  let townLayer, stateCtx, townCtx, candLayer, outline, parcelLayer, popup;
   const townById = new Map();
   const layerById = new Map();
 
@@ -298,6 +430,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     if (townCtx) townCtx.setStyle(styleTownCtx);
     if (candLayer) candLayer.setStyle(styleCand);
     if (outline) outline.setStyle({ color: tok("--ink") });
+    if (parcelLayer) parcelLayer.setStyle(styleParcel());
   }
   const styleStateCtx = (f) => f.properties.w === "water"
     ? { fillColor: tok("--bg"), fillOpacity: 1, color: tok("--line"), weight: 0.6 }
@@ -307,6 +440,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     : { color: tok("--road"), weight: f.properties.w === "major" ? 1.6 : 0.6, opacity: 0.95 };
   const catColor = (c) => tok("--" + CAT[c].sw);
   const styleCand = (f) => ({ fillColor: catColor(f.properties.c), fillOpacity: 0.85, color: tok("--panel"), weight: 0.6 });
+  const styleParcel = () => ({ color: tok("--ink"), weight: 2.2, dashArray: "6 4", fillColor: tok("--ink"), fillOpacity: 0.08 });
 
   // ---------------------------------------------------------------- panel
   function scenarioControls() {
@@ -399,6 +533,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
       <div class="compare" role="group" aria-label="Compare weapons and setbacks">
         ${ORDER.map((id) => `<button type="button" data-sc="${id}" aria-pressed="${id === sid}"><span class="k">${SCEN[id].t}</span><span class="v">${fmt(t[id].ac)} ac</span></button>`).join("")}
       </div>
+      <p class="hint">Click any colored land on the map to see who owns it and draft a letter asking permission.</p>
       ${catRows(v, v.ac, "Acres")}
       ${local}`;
     if (file) {
@@ -431,6 +566,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     $("view-town").hidden = !state.town;
     $("back").hidden = !state.town;
     if (state.town) renderTown(); else renderState();
+    renderParcel();
     renderLegend();
   }
 
@@ -444,13 +580,271 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
       pane: "cands", renderer: canvas, style: styleCand,
       filter: (f) => f.properties.t <= tier,
       onEachFeature: (f, layer) => layer.on("click", (e) => {
-        const p = f.properties, c = CAT[p.c];
-        L.popup({ maxWidth: 280 }).setLatLng(e.latlng).setContent(
-          `<div class="pk" style="color:${catColor(p.c)}">${c.label}</div>` +
-          `<div class="pn">${esc(p.s || "Unnamed land")}</div>` +
-          `<div class="pm"><span class="num">${fmt(p.a)}</span> acres in this piece. ${c.who}</div>`).openOn(map);
+        // Pan clear of the "All of Massachusetts" button in the top-left corner.
+        popup = L.popup({ maxWidth: 290, autoPanPaddingTopLeft: L.point(12, 64), autoPanPaddingBottomRight: L.point(12, 12) }).setLatLng(e.latlng);
+        lookupParcel(e.latlng, pieceAt(e.latlng, f).properties);
+        popup.openOn(map);
       }),
     }).addTo(map);
+  }
+
+  // Leaflet's canvas hit test also counts a click within a few pixels of a shape's edge, and the
+  // last-drawn shape wins, so a click near a border can land on the neighbor. Ask which piece
+  // actually contains the point (even-odd per polygon) and fall back to Leaflet's pick.
+  const inRing = (x, y, r) => {
+    let c = false;
+    for (let i = 0, j = r.length - 1; i < r.length; j = i++) {
+      const [xi, yi] = r[i], [xj, yj] = r[j];
+      if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+  const bboxOf = (f) => f._bb || (f._bb = f.geometry.coordinates.reduce((b, poly) => poly[0].reduce((b, [x, y]) =>
+    [Math.min(b[0], x), Math.min(b[1], y), Math.max(b[2], x), Math.max(b[3], y)], b), [180, 90, -180, -90]));
+  function pieceAt(latlng, fallback) {
+    const file = state.cache.get(state.town), tier = SCEN[state.scenario].tier, x = latlng.lng, y = latlng.lat;
+    for (const f of file ? file.candidates : []) {
+      if (f.properties.t > tier || f.geometry.type !== "MultiPolygon") continue;
+      const bb = bboxOf(f);
+      if (x < bb[0] || x > bb[2] || y < bb[1] || y > bb[3]) continue;
+      if (f.geometry.coordinates.some((poly) => poly.reduce((inside, r) => inside !== inRing(x, y, r), false))) return f;
+    }
+    return fallback;
+  }
+
+  // ---------------------------------------------------------------- who to ask (live parcel lookup)
+  let lookupSeq = 0;
+  const title = (s) => String(s || "").toLowerCase().replace(/\b([a-z])/g, (m) => m.toUpperCase());
+  const zip = (z) => /^\d{4}$/.test(String(z || "").trim()) ? "0" + String(z).trim() : String(z || "").trim();
+  const mailLines = (r) => [r.OWNER1, r.OWN_ADDR,
+    [r.OWN_CITY, [r.OWN_STATE, zip(r.OWN_ZIP)].filter(Boolean).join(" ")].filter(Boolean).join(", "),
+    r.OWN_CO && !/^(US|USA|UNITED STATES)$/i.test(r.OWN_CO.trim()) ? r.OWN_CO : ""].map((x) => String(x || "").trim()).filter(Boolean);
+  const siteOf = (r) => r.SITE_ADDR ? title(r.SITE_ADDR) : "";
+  const parcelRef = (r) => r.MAP_PAR_ID ? `map/parcel ${r.MAP_PAR_ID}` : `parcel ${r.LOC_ID}`;
+  const NOT_LAND = { ROW: "a public right-of-way", PRIV_ROW: "a private right-of-way", RAIL_ROW: "a railroad right-of-way", WATER: "water" };
+
+  async function lookupParcel(latlng, piece) {
+    const seq = ++lookupSeq;
+    state.parcel = { piece, loading: true };
+    if (parcelLayer) { map.removeLayer(parcelLayer); parcelLayer = null; }
+    renderParcel();
+    const q = new URLSearchParams({
+      geometry: `${latlng.lng.toFixed(6)},${latlng.lat.toFixed(6)}`, geometryType: "esriGeometryPoint", inSR: "4326",
+      spatialRel: "esriSpatialRelIntersects", outFields: PARCEL_FIELDS, returnGeometry: "true", outSR: "4326",
+      geometryPrecision: "6", f: "geojson",
+    });
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), 15000);
+    let next;
+    try {
+      const r = await fetch(`${PARCELS}?${q}`, { signal: ctrl.signal });
+      const gj = await r.json();
+      if (!r.ok || gj.error) throw new Error(gj.error ? gj.error.message : r.status);
+      const feats = gj.features || [];
+      // Fee/tax parcels first; one record per owner (condos list every unit owner).
+      const rank = (f) => ["FEE", "TAX"].includes(f.properties.POLY_TYPE) ? 0 : 1;
+      const seen = new Set(), recs = [];
+      for (const f of [...feats].sort((a, b) => rank(a) - rank(b))) {
+        const p = f.properties, k = [p.OWNER1, p.OWN_ADDR, p.LOC_ID].join("|");
+        if (!seen.has(k)) { seen.add(k); recs.push(p); }
+      }
+      next = { piece, recs, gj };
+    } catch (err) {
+      next = { piece, error: true };
+    } finally {
+      clearTimeout(timer);
+    }
+    if (seq !== lookupSeq) return;          // a newer click won
+    state.parcel = next;
+    if (next.gj && next.gj.features.length) {
+      parcelLayer = L.geoJSON(next.gj, { pane: "parcel", renderer: canvas, style: styleParcel, interactive: false }).addTo(map);
+    }
+    renderParcel();
+    $("view-parcel").scrollIntoView({ block: "nearest", behavior: reduce ? "auto" : "smooth" });
+  }
+
+  function clearParcel() {
+    lookupSeq++;
+    state.parcel = null;
+    if (parcelLayer) { map.removeLayer(parcelLayer); parcelLayer = null; }
+    renderParcel();
+  }
+
+  function ownerStatus(p) {
+    if (p.loading) return "Looking up the owner…";
+    if (p.error) return "MassGIS didn't answer. Click the land again to retry.";
+    if (!p.recs.length) return "No tax parcel at this spot.";
+    return null;
+  }
+
+  function renderParcel() {
+    const sec = $("view-parcel"), p = state.parcel;
+    if (!p || !state.town) { sec.hidden = true; sec.innerHTML = ""; if (popup) popup.remove(); return; }
+    const c = CAT[p.piece.c], town = townById.get(state.town).name;
+    const status = ownerStatus(p);
+    let body = status ? `<p class="fine">${status}</p>` : "";
+    if (!status) {
+      body = p.recs.slice(0, 6).map((r, i) => {
+        const notLand = NOT_LAND[r.POLY_TYPE];
+        const lot = r.LOT_SIZE > 0 && (!r.LOT_UNITS || /^A/i.test(r.LOT_UNITS)) ? `${(+r.LOT_SIZE).toFixed(r.LOT_SIZE < 10 ? 2 : 1)} acres` : "";
+        const action = notLand ? `<p class="fine">This piece is ${notLand}, not anyone's lot.</p>`
+          : p.piece.c === "dfg" ? `<p class="fine">MassWildlife land is open to hunting under Wildlife Management Area rules. No letter needed.</p>`
+          : `<button type="button" class="btn primary" data-letter="${i}">Draft a permission letter</button>`;
+        return `<div class="rec">
+          <div class="owner">${esc(r.OWNER1 || "No owner listed")}</div>
+          <dl>
+            <dt>Mailing</dt><dd>${mailLines(r).slice(1).map(esc).join("<br>") || "Not recorded"}</dd>
+            <dt>Property</dt><dd>${esc([siteOf(r), town].filter(Boolean).join(", "))}</dd>
+            ${r.USE_DESC ? `<dt>Use</dt><dd>${esc(r.USE_DESC)}</dd>` : ""}
+            ${lot ? `<dt>Lot</dt><dd>${lot}</dd>` : ""}
+            <dt>Parcel</dt><dd>${esc(r.MAP_PAR_ID || r.LOC_ID || "")}${r.FY ? ` · assessed FY${r.FY}` : ""}</dd>
+          </dl>
+          ${action}
+        </div>`;
+      }).join("");
+      if (p.recs.length > 6) body += `<p class="fine">+ ${p.recs.length - 6} more owners of record (a condominium or shared parcel).</p>`;
+      if (p.piece.c === "public") body += `<p class="fine">Public land: the agency that manages it decides. Address the letter to that department if the owner of record is a general town or state office.</p>`;
+      body += `<p class="fine">Owner of record from the town assessor, via MassGIS. Mailing addresses go out of date; check the town assessor's database before you mail anything.</p>`;
+    }
+    const siteLine = [status ? "" : "The lot outlined on the map", p.piece.s || ""].filter(Boolean).join(" · ");
+    sec.hidden = false;
+    sec.innerHTML = `<div class="parcel ${c.sw}">
+      <h3><span class="sw ${c.sw}"></span>Who to ask · ${c.label}</h3>
+      ${siteLine ? `<p class="site">${esc(siteLine)}</p>` : ""}
+      ${body}
+    </div>`;
+    sec.querySelectorAll("[data-letter]").forEach((b) => b.addEventListener("click", () => openLetter(p.recs[+b.dataset.letter])));
+
+    if (popup && map.hasLayer(popup) || popup && p.loading) {
+      const first = p.recs && p.recs[0];
+      const own = status ? esc(status)
+        : `Owner of the outlined lot: <strong>${esc(first.OWNER1 || "not listed")}</strong>${p.recs.length > 1 ? ` and ${p.recs.length - 1} more` : ""}.`;
+      const ask = !status && !NOT_LAND[first.POLY_TYPE] && p.piece.c !== "dfg" ? `<br><button type="button" class="btn sm" data-ask>Draft a permission letter</button>` : "";
+      popup.setContent(
+        `<div class="pk" style="color:${catColor(p.piece.c)}">${c.label}</div>` +
+        `<div class="pn">${esc(p.piece.s || "Unnamed land")}</div>` +
+        `<div class="pm"><span class="num">${fmt(p.piece.a)}</span> acres in this candidate area, which can cross many lots. ${c.who}</div>` +
+        `<div class="pm" style="margin-top:6px">${own}${ask}</div>`);
+      const el = popup.getElement();
+      const btn = el && el.querySelector("[data-ask]");
+      if (btn) btn.addEventListener("click", () => openLetter(first));
+    }
+  }
+
+  // ---------------------------------------------------------------- permission letter
+  let letterRec = null;
+  const BLANK = "\u0001", BLANK_S = "\u0002", BLANK_L = "\u0003";
+  const hv = (k) => $("h-" + k).value.trim();
+  const or = (x, blank = BLANK) => x || blank;
+
+  function letterModel() {
+    const r = letterRec, town = townById.get(state.town).name;
+    const w = hv("gear") === "firearm" ? "firearm" : "archery", S = SEASON[w];
+    const n = +hv("companions");
+    const who = n === 0 ? "alone" : n === 1 ? "with one companion" : `with ${n} companions`;
+    const site = siteOf(r), place = site ? `${site} in ${town}` : `in ${town} (${parcelRef(r)})`;
+    const name = hv("name"), phone = hv("phone"), email = hv("email"), lic = hv("license");
+    const reach = [phone, email].filter(Boolean).join(" or ");
+    const today = new Date().toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" });
+    const letter = [
+      ["addr", [or(name), or(hv("street")), or(hv("cityline")), [phone, email].filter(Boolean).join(" · ")].filter(Boolean)],
+      ["p", today],
+      ["addr", mailLines(r).length ? mailLines(r) : ["Owner of record", BLANK]],
+      ["re", `Re: Permission to hunt wild turkey at ${site ? `${site}, ${town}` : town} (${parcelRef(r)})`],
+      ["p", `${hv("greeting") || "Dear Property Owner"},`],
+      ["p", `I'm writing to ask whether you would let me hunt wild turkey on your land ${site ? "at " : ""}${place} during ${or(hv("dates"))}. I would hunt on foot with ${S.gear}, ${who}, only during legal hours, and never on a Sunday.`],
+      ["p", `I hold a Massachusetts hunting license${lic ? ` (no. ${lic})` : ""} and a turkey permit, and I will:`],
+      ["ul", [`follow every state and local hunting rule, including staying ${S.keep} and 150 feet from paved roads;`,
+              "hunt only the areas and dates you approve, and park where you ask;",
+              "let you know when I plan to be there, if you'd like;",
+              "leave your land as I found it."]],
+      ["p", `I'm not offering or asking for any payment, and I'm glad to sign any release or agreement you'd like. If you're willing, a signed copy of the enclosed form is all I need. You can also reach me at ${or(reach)}.`],
+      ["p", "If the answer is no, I understand completely. Thank you for considering it."],
+      ["p", "Sincerely,"],
+      ["sig", or(name)],
+    ];
+    const form = [
+      ["h", "Permission to hunt"],
+      ["p", `Property: ${site ? `${site}, ` : ""}${town}, Massachusetts. Assessor's ${parcelRef(r)}${r.LOC_ID ? ` (MassGIS ${r.LOC_ID})` : ""}.`],
+      ["p", `Owner of record: ${r.OWNER1 || BLANK}`],
+      ["p", `I, ${BLANK}, the owner of the property above or authorized to act for the owner, give permission to ${or(name)} to hunt wild turkey with ${S.gear} on this property from ${BLANK_S} to ${BLANK_S}.`],
+      ["p", `Companions allowed (names): ${BLANK}`],
+      ["p", `Conditions (areas, parking, days, notice): ${BLANK_L}${BLANK_L}`],
+      ["sig", `Landowner signature ${BLANK}   Date ${BLANK_S}`],
+      ["p", `Landowner phone ${BLANK}`],
+      ["sig", `Hunter: ${or(name)} · License no. ${or(lic, BLANK_S)} · ${or(phone, BLANK_S)}`],
+      ["p", `Hunter signature ${BLANK}   Date ${BLANK_S}`],
+      ["fine", "Keep a copy. The hunter carries this form while hunting on the property. The landowner can withdraw permission at any time."],
+    ];
+    return { letter, form };
+  }
+
+  function toHtml(blocks) {
+    const t = (x) => esc(x).replace(/\u0001/g, '<span class="blank"></span>').replace(/\u0002/g, '<span class="blank s"></span>').replace(/\u0003/g, '<span class="blank l"></span>');
+    return blocks.map(([k, v]) => k === "addr" ? `<p class="addr">${v.map(t).join("<br>")}</p>`
+      : k === "ul" ? `<ul>${v.map((i) => `<li>${t(i)}</li>`).join("")}</ul>`
+      : k === "h" ? `<h4>${t(v)}</h4>`
+      : `<p class="${k}">${t(v)}</p>`).join("");
+  }
+  function toText(blocks) {
+    const t = (x) => String(x).replace(/\u0001/g, "____________________").replace(/\u0002/g, "__________").replace(/\u0003/g, "\n______________________________________________________");
+    return blocks.map(([k, v]) => k === "addr" ? v.map(t).join("\n") : k === "ul" ? v.map((i) => "  - " + t(i)).join("\n") : k === "h" ? t(v).toUpperCase() : t(v)).join("\n\n");
+  }
+
+  function renderLetter() {
+    const m = letterModel();
+    $("doc").innerHTML = `<section class="page" aria-label="Letter">${toHtml(m.letter)}</section><section class="page" aria-label="Permission form">${toHtml(m.form)}</section>`;
+  }
+
+  function openLetter(rec) {
+    letterRec = rec;
+    let saved = {};
+    try { saved = JSON.parse(localStorage.getItem(HUNTER_KEY) || "{}"); } catch (err) { saved = {}; }
+    for (const k of HUNTER_FIELDS) $("h-" + k).value = saved[k] ?? (k === "greeting" ? "Dear Property Owner" : "");
+    const w = weaponOf(state.scenario);
+    $("h-gear").value = w;
+    $("h-dates").value = SEASON[w].dates;
+    $("copied").textContent = "";
+    renderLetter();
+    $("letter").showModal();
+  }
+
+  function wireLetter() {
+    const dlg = $("letter");
+    $("hunter").addEventListener("input", (e) => {
+      if (e.target.id === "h-gear") {
+        // Switching weapons swaps the season, unless the dates were typed by hand.
+        const other = SEASON[e.target.value === "firearm" ? "archery" : "firearm"].dates;
+        if ($("h-dates").value === other) $("h-dates").value = SEASON[e.target.value].dates;
+      }
+      const keep = Object.fromEntries(HUNTER_FIELDS.map((k) => [k, hv(k)]));
+      try { localStorage.setItem(HUNTER_KEY, JSON.stringify(keep)); } catch (err) { /* private mode: just don't remember */ }
+      renderLetter();
+    });
+    $("hunter").addEventListener("submit", (e) => e.preventDefault());
+    $("letter-close").addEventListener("click", () => dlg.close());
+    dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });   // backdrop
+    $("letter-copy").addEventListener("click", async () => {
+      const m = letterModel();
+      try {
+        await navigator.clipboard.writeText(toText(m.letter) + "\n\n\n" + toText(m.form) + "\n");
+        $("copied").textContent = "Copied the letter and form.";
+      } catch (err) {
+        $("copied").textContent = "Couldn't copy. Use Print or save as PDF instead.";
+      }
+    });
+    $("letter-print").addEventListener("click", () => {
+      const root = $("print-root"), was = document.title;
+      root.innerHTML = $("doc").innerHTML;
+      document.title = `Permission to hunt - ${siteOf(letterRec) || parcelRef(letterRec)}`;   // the PDF's default file name
+      document.body.classList.add("printing");
+      addEventListener("afterprint", () => {
+        document.body.classList.remove("printing");
+        root.innerHTML = "";
+        document.title = was;
+      }, { once: true });
+      print();
+    });
   }
 
   async function selectTown(id, opts = {}) {
@@ -459,6 +853,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     state.town = id;
     if (!opts.fromHash) history.replaceState(null, "", "#" + slug(t.name));
     $("town-search").value = t.name;
+    clearParcel();
     if (townCtx) { map.removeLayer(townCtx); townCtx = null; }
     if (candLayer) { map.removeLayer(candLayer); candLayer = null; }
     if (outline) { map.removeLayer(outline); outline = null; }
@@ -499,6 +894,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
     state.town = null;
     history.replaceState(null, "", location.pathname + location.search);
     $("town-search").value = "";
+    clearParcel();
     for (const l of [townCtx, candLayer, outline]) if (l) map.removeLayer(l);
     townCtx = candLayer = outline = null;
     map.closePopup();
@@ -517,6 +913,7 @@ a { color: inherit; text-decoration-color: var(--muted); text-underline-offset: 
   // ---------------------------------------------------------------- boot
   async function boot() {
     scenarioControls();
+    wireLetter();
     const st = $("status"); st.textContent = "Loading Massachusetts…"; st.hidden = false;
     let d, ctx;
     try {

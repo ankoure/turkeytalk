@@ -113,7 +113,9 @@ Outputs in `data/massgis/out/`:
 cd web && python3 -m http.server 8000    # then open http://localhost:8000
 ```
 
-It also runs as-is on any static host (GitHub Pages, S3). Town links use the hash, e.g. `#petersham`.
+It also runs as-is on any static host. It's deployed on Vercel at [turkey.andrewkoure.com](https://turkey.andrewkoure.com): `vercel.json` serves `web/` with no build step, and every push to `main` redeploys. Town links use the hash, e.g. `#petersham`.
+
+**Who to ask.** Clicking candidate land looks up the parcel under that point in MassGIS's [Massachusetts Property Tax Parcels](https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Massachusetts_Property_Tax_Parcels/FeatureServer/0) service, live from the browser. The page outlines the lot and shows the owner of record, mailing address, use and lot size. For anything but MassWildlife land (already open to hunting), it can then draft a permission letter plus a signable permission form, which print to two Letter pages or copy as text. Nothing about owners is stored in `web/data/`, and the hunter's own details stay in the browser's `localStorage`. The season dates the letter quotes are the `SEASON` constant in `web/src/index.html`; update them each year.
 
 The template is `web/src/index.html`; `ma web` inlines Leaflet's stylesheet into `web/index.html`. Geometry in `web/data/` is delta-encoded integers rather than GeoJSON coordinates, which makes it about 3x smaller (format notes in `turkey/ma_web.py`).
 
