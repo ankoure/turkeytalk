@@ -1,8 +1,13 @@
 # Turkey constraint stack — every regulatory number lives here, not in code.
 # Distances are US survey feet (the analysis CRS is EPSG:2249, MA Mainland ftUS).
 #
-# Rule citations are paraphrased from the talk's references (see docs/methodology.md).
-# Re-verify against the current text before treating any output as current law.
+# Layers are erased in tiers, so the waterfall reads as an argument:
+#   land    open water
+#   state   Massachusetts law (statutes verified against malegislature.gov, Nov 2026)
+#   access  not law: public parkland, where the public owner is assumed to say no
+#   local   Cambridge ordinances, applied ON TOP of everything Massachusetts allows
+# What's left before the local tier is the state-law answer for Cambridge; what's
+# left after it is the Cambridge answer. docs/claims.md checks every rule's source.
 
 [project]
 crs = "EPSG:2249"             # NAD83 / Massachusetts Mainland (ftUS)
@@ -12,29 +17,51 @@ gpkg = "outputs/turkeytalk.gpkg"
 min_candidate_sqft = 10000    # drop slivers smaller than ~0.23 ac; nobody hunts from a 3 ft gap
 
 # ---------------------------------------------------------------- scenarios
-# One run per scenario. The firearm case reproduces slide 4: the citywide
-# discharge ban zeroes the city before any other layer is touched.
+# `weapon` picks the local rule: firearms meet Cambridge's citywide discharge ban,
+# bows only its street-and-bridge ban. `setback_from` picks the state rule:
+# dwellings (MGL c.131 §58) or any building in use (MGL c.269 §12E, firearms only).
+#
+# Thanksgiving 2026 (Thu Nov 26) falls in the archery-only part of the fall turkey
+# season (Zones 1-13: archery Oct 5-17 and Nov 2-28; shotgun Oct 19-31). The firearm
+# scenario answers "could I, in shotgun weeks?", not "could I, on Thanksgiving?".
 
 [[scenario]]
 id = "firearm"
-label = "Firearm (citywide discharge ban)"
-citywide_ban = true
+label = "Firearm, 500 ft from any building in use"
+weapon = "firearm"
+setback_from = "buildings"
+setback_ft = 500
 
 [[scenario]]
 id = "archery_500ft"
-label = "Archery, 500 ft dwelling setback (current)"
-dwelling_setback_ft = 500
+label = "Archery, 500 ft from dwellings (current law)"
+weapon = "archery"
+setback_from = "dwellings"
+setback_ft = 500
 
 [[scenario]]
 id = "archery_250ft"
-label = "Archery, 250 ft dwelling setback (April 2026 bill)"
-dwelling_setback_ft = 250
+label = "Archery, 250 ft from dwellings (pending bill)"
+weapon = "archery"
+setback_from = "dwellings"
+setback_ft = 250
 
 # ---------------------------------------------------------------- rules
-# Order here is the order of the waterfall in outputs/summary.csv.
+
+[rules.water]
+# Tier: land. You can't stand in the Charles.
+label = "open water"
+cite = "Physical"
+# A drinking-water buffer is NOT a hunting rule: no statute or regulation found bars
+# hunting near a reservoir, the Fresh Pond Reservation rules don't mention it, and
+# 310 CMR 22.02 Zone A (400 ft) is a land-use definition. Set above 0 to model it anyway.
+reservoir_names = ["Fresh Pond"]
+reservoir_buffer_ft = 0
 
 [rules.dwellings]
-# Setback from any dwelling in use (MGL c.131 §58; 321 CMR 3.00). Distance comes from the scenario.
+# Tier: state. MGL c.131 §58: no hunting "by any means on the land of another within
+# five hundred feet of any dwelling in use, except as authorized by the owner or occupant".
+cite = "MGL c.131 §58"
 # A Cambridge building is a dwelling if its land-use parcel has residential units or group quarters.
 cambridge_building_types = ["BLDG", "MOBILE"]
 # ...or if its parcel is a use where people sleep but the assessor records 0 units.
@@ -46,28 +73,46 @@ overnight_use_categories = ["Higher Education", "Education Residential", "Educat
 # dwellings, minus sheds below this footprint. Conservative on purpose.
 neighbor_min_footprint_sqft = 200
 
+[rules.buildings]
+# Tier: state, firearms only. MGL c.269 §12E: no discharge "within 500 feet of a dwelling
+# or other building in use", except with the owner's or legal occupant's consent.
+cite = "MGL c.269 §12E"
+# Every Cambridge building type that is a building someone can be in (not walkways,
+# foundations, pads, ruins or construction sites).
+cambridge_building_types = ["BLDG", "OUTBLDG", "MOBILE", "GAS-STATION"]
+neighbor_min_footprint_sqft = 0
+
+[rules.highways]
+# Tier: state. MGL c.131 §58: no firearm discharged or arrow released "upon or across any
+# state or hard surfaced highway, or within one hundred and fifty feet of any such highway".
+label = "highways + 150 ft"
+cite = "MGL c.131 §58"
+hard_surface_types = ["RD-PAVED", "RD-ALLEY", "RD-BRIDGE"]
+setback_ft = 150
+
 [rules.parks]
-# No hunting on public parkland. Open-space polygons with these OWNER values are erased.
+# Tier: access. No statute bars hunting on public land; the owner decides. The City
+# (DPW, Water Department) is assumed not to allow it in its parks. DCR land is open to
+# hunting by default (302 CMR 12.11) unless listed, so erasing it is the strict reading.
 # POPS = privately owned public space: public access, so treated as parkland.
+label = "public parkland"
+cite = "Owner assumed to say no"
 excluded_owners = ["City", "Cambridge", "State", "Federal", "School Dep", "Belmont", "POPS", "Easement", ""]
 
-[rules.roads]
-# Cambridge §9.16.060 bans bows in streets and on bridges (0 ft: the surface itself).
-# MGL c.131 §58 bars releasing an arrow within 150 ft of a hard-surfaced highway.
+[rules.local]
+# Tier: local. Cambridge Code of Ordinances, Title 9 (Municode). The section text
+# could not be retrieved independently (Municode blocks automated access): confirm it.
+firearm_label = "citywide firearm ban"
+firearm_cite = "Cambridge §9.16.010"
+archery_label = "bows in streets, on bridges"
+archery_cite = "Cambridge §9.16.060"
 street_types = ["RD-PAVED", "RD-ALLEY", "RD-BRIDGE", "RD-TRAF-ISLAND", "RD-UNPAVED"]
-hard_surface_types = ["RD-PAVED", "RD-ALLEY", "RD-BRIDGE"]
-hard_surface_setback_ft = 150
 include_bridges_layer = true
 
-[rules.water]
-# All mapped water bodies are erased (you cannot stand in the Charles).
-# Drinking-water reservoirs also get a protective buffer; 400 ft mirrors the
-# MassDEP Zone A width for surface-water supplies (310 CMR 22.02).
-reservoir_names = ["Fresh Pond"]
-reservoir_buffer_ft = 400
-
 [rules.permission]
-# Not an erase: every surviving acre is split by parcel and tagged with who has to say yes.
+# Not an erase: every surviving acre is split by parcel and tagged with who owns it.
+# Massachusetts requires the owner's permission only on land posted against hunting
+# (MGL c.131 §36), but on a city lot "ask first" is the only workable reading.
 # tax_status (land-use layer) -> owner class shown on the map and in candidate_parcels.
 owner_class = { "City NonTax" = "City of Cambridge", "State NonTax" = "Commonwealth", "Federal NonTax" = "Federal", "Authority NonTax" = "Public authority", "Educ NonTax" = "Educational institution", "Religious NonTax" = "Religious institution", "Other NonTax" = "Other nonprofit" }
 default_owner_class = "Private (taxable)"
@@ -92,6 +137,6 @@ water      = "Hydro/Water_Bodies/HYDRO_WaterBodies.geojson"
 # within ring_ft of the city line, so dwellings across the border still cast setbacks.
 url = "https://services1.arcgis.com/hGdibHYSPO59RG1h/arcgis/rest/services/Building_Structures/FeatureServer/0/query"
 cambridge_town_id = 49
-ring_ft = 600          # must be >= the largest dwelling setback in any scenario
+ring_ft = 600          # must be >= the largest setback in any scenario
 tile_deg = 0.008       # query tile size; the service times out on a citywide bbox
 workers = 4

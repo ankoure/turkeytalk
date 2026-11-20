@@ -5,29 +5,29 @@ rank,candidate_id,site,use,owner_class,parcels,acres
 4,archery_250ft-02,Mt. Auburn Cemetery,Cemetery,Other nonprofit,1,5.71
 5,archery_250ft-11,61-67 Smith Pl,Industrial,Private (taxable),6,4.39
 6,archery_250ft-07,725 Concord Ave,Office,Private (taxable),11,4.32
-7,archery_250ft-28,360 Binney St,Office/R&D,Private (taxable),6,3.2
+7,archery_250ft-27,360 Binney St,Office/R&D,Private (taxable),6,3.2
 8,archery_250ft-09,191 Alewife Brook Pkwy,Utility,Private (taxable),1,2.46
-9,archery_250ft-23,273 First St,Utility,Private (taxable),2,2.09
+9,archery_250ft-29,273 First St,Utility,Private (taxable),2,2.09
 10,archery_250ft-21,MIT Brigg's Field,Higher Education,Educational institution,2,2.08
 11,archery_250ft-14,87 Cambridgepark Dr,Office/R&D,2 owner classes,4,2.07
 12,archery_250ft-15,5 Cambridgepark Dr,Transportation,Commonwealth,1,1.96
-13,archery_250ft-26,75 Broadway,Vacant,Private (taxable),5,1.82
-14,archery_250ft-10,40 Smith Pl,Industrial,Private (taxable),5,1.54
-15,archery_250ft-32,80-90 First St,Office/R&D with Retail,Private (taxable),2,1.5
-16,archery_250ft-30,345 Binney St,Office,2 owner classes,5,1.47
-17,archery_250ft-05,36 Moulton St,Office,Private (taxable),5,1.47
-18,archery_250ft-03,406 Concord Ave,Government,Commonwealth,1,1.43
+13,archery_250ft-25,75 Broadway,Vacant,Private (taxable),5,1.82
+14,archery_250ft-03,406 Concord Ave,Government,Commonwealth,1,1.58
+15,archery_250ft-10,40 Smith Pl,Industrial,Private (taxable),5,1.54
+16,archery_250ft-32,80-90 First St,Office/R&D with Retail,Private (taxable),2,1.5
+17,archery_250ft-28,345 Binney St,Office,2 owner classes,5,1.47
+18,archery_250ft-05,36 Moulton St,Office,Private (taxable),5,1.47
 19,archery_250ft-08,55 Wilson Rd,Industrial,Private (taxable),7,1.22
 20,archery_250ft-31,2-14 Monsignor Obrien Hwy,Education,Other nonprofit,1,1.0
-21,archery_250ft-25,555 Technology Sq,Office/R&D,Private (taxable),2,0.96
+21,archery_250ft-24,555 Technology Sq,Office/R&D,Private (taxable),2,0.96
 22,archery_250ft-20,634 Memorial Dr,Office/R&D,Private (taxable),3,0.95
 23,archery_250ft-16,351 Rindge Ave,Transportation,2 owner classes,2,0.89
 24,archery_250ft-18,36-64 Whittemore Ave,Office/R&D,Private (taxable),1,0.75
-25,archery_250ft-24,575 Technology Sq,Office,Private (taxable),3,0.64
+25,archery_250ft-23,575 Technology Sq,Office,Private (taxable),3,0.64
 26,archery_250ft-17,6 Acorn Park Dr,Vacant,Private (taxable),1,0.48
-27,archery_250ft-27,220 Binney St,Government,Federal,1,0.45
+27,archery_250ft-26,220 Binney St,Government,Federal,1,0.45
 28,archery_250ft-04,211 Alewife Brook Pkwy,Commercial,Private (taxable),1,0.31
-29,archery_250ft-29,1 Rogers St,Office/R&D,Private (taxable),1,0.28
+29,archery_250ft-30,1 Rogers St,Office/R&D,Private (taxable),1,0.28
 30,archery_250ft-22,608-616 Main St,Industrial,Private (taxable),1,0.25
 31,archery_250ft-13,1 Alewife Pl,Office,Private (taxable),1,0.25
 32,archery_250ft-19,18 Blackstone St,Office/R&D,2 owner classes,2,0.23

@@ -1,0 +1,151 @@
+# Statewide constraint stack (MassGIS sources). Same idea as config.toml, but
+# every layer comes from MassGIS so any of the 351 cities and towns can be run.
+# Distances are in feet as the laws state them; the code converts to meters
+# (MassGIS layers are EPSG:26986, MA State Plane meters).
+#
+# Every town gets the same base: Massachusetts law (the setbacks in MGL c.131 §58
+# and c.269 §12E), plus two labeled assumptions (open water; public recreation land
+# whose owner is assumed to say no). Town ordinances go ON TOP, only for towns with
+# a [local.<TOWN_ID>] block. docs/claims.md checks each rule against its source.
+
+[project]
+crs = "EPSG:26986"
+raw_dir = "data/raw/massgis"
+work_gpkg = "data/massgis/prepared.gpkg"
+out_dir = "data/massgis/out"
+web_dir = "web"
+min_candidate_sqft = 10000      # drop slivers under ~0.23 ac
+workers = 12
+
+# ---------------------------------------------------------------- scenarios
+# Candidates nest: firearm ⊆ archery_500ft ⊆ archery_250ft.
+
+[[scenario]]
+id = "archery_500ft"
+weapon = "archery"
+label = "Archery, 500 ft from dwellings (current law)"
+setback_ft = 500
+setback_from = "dwellings"
+
+[[scenario]]
+id = "archery_250ft"
+weapon = "archery"
+label = "Archery, 250 ft from dwellings (pending bill)"
+# Filed by the Governor in April 2026; in the House version of S.3064, in conference
+# committee since July 2026. Not law as of November 2026.
+setback_ft = 250
+setback_from = "dwellings"
+
+[[scenario]]
+id = "firearm"
+weapon = "firearm"
+label = "Firearm, 500 ft from any building in use"
+# Fall turkey 2026, Zones 1-13: shotguns only Oct 19-31. Thanksgiving (Nov 26) is archery-only.
+# MGL c.269 §12E: no discharge within 500 ft of a dwelling OR OTHER BUILDING IN USE.
+setback_ft = 500
+setback_from = "buildings"
+
+[web]
+# Web files store each acre once, tagged with the strictest scenario it survives.
+# Order must run strictest -> loosest; each scenario's candidates contain the previous one's.
+tiers = ["firearm", "archery_500ft", "archery_250ft"]
+simplify_m = 3
+
+# ---------------------------------------------------------------- rules
+
+[rules.buildings]
+# Firearm scenario: every MassGIS structure counts as a building in use.
+min_footprint_sqft = 0
+# Archery scenarios: structures of at least this size on a dwelling parcel.
+dwelling_min_footprint_sqft = 300
+# Structures that fall on no parcel, or on a parcel with no use code, count as
+# dwellings: conservative, since the error then shrinks candidates instead of growing them.
+unknown_is_dwelling = true
+
+[rules.dwellings]
+# MA DOR property use codes (first three digits of USE_CODE).
+# Residential: every 1xx code except these (accessory land, vacant land, child care).
+residential_exclude = ["106", "130", "131", "132", "140"]
+# Mixed use (0xx) counts when either secondary digit is 1 (residential).
+# Uses where people sleep without being "residential" on the tax roll:
+# hotels, inns, nursing homes, hospitals, care facilities, camps, state institutions,
+# UMass/state colleges, private schools and colleges (dorms, boarding schools),
+# charitable housing, rectories, housing authorities, county jails.
+overnight_codes = ["300", "301", "302", "304", "305", "306", "386", "387",
+                   "912", "913", "914", "917", "922", "923", "927",
+                   "940", "941", "942", "943", "945", "955", "957", "959", "961", "970", "993"]
+# UNITS > 0 also makes a dwelling, but only on records whose use code is blank or
+# mixed (0xx): some assessors put commercial unit counts in UNITS on office and retail records.
+
+[rules.roads]
+# Massachusetts law. MGL c.131 §58: no firearm or arrow upon/across a state or
+# hard-surfaced highway, or within 150 ft of one. SURFACE_TP codes from the MassDOT Road Inventory:
+# 3-9 = brick, block, surface-treated, bituminous, concrete, composite (hard);
+# 1, 2, 10, 11 = earth, gravel, stone dust, boardwalk (not hard); 0 = not recorded.
+hard_surface_codes = [3, 4, 5, 6, 7, 8, 9]
+unknown_surface_is_hard = true
+hard_surface_setback_ft = 150
+# Hard roads are buffered from the edge of their surface: half of SURFACE_WD, or this default.
+default_half_width_ft = 12
+# §58 says nothing about unpaved roads, so standing on a dirt road is not erased
+# statewide. Cambridge erases every street surface as a local rule (see [local.49]).
+exclude_unpaved_surface = false
+
+[rules.water]
+# Assumption (physical): open water is erased; there's no dry land to stand on.
+# 1:25k hydrography POLY_CODE: 1 reservoir, 3 submerged wetland, 6 lake/pond/wide
+# river, 8 bay/ocean, 9 inundated area. Marshes, bogs and tidal flats stay as land.
+open_water_codes = [1, 3, 6, 8, 9]
+# MassDEP Surface Water Supply Protection Zone A (reservoir + 400 ft, tributaries + 200 ft)
+# is a land-use definition (310 CMR 22.02), not a hunting rule, and DCR issues hunting
+# permits on its watershed lands. Off by default; set true to model "not near the water supply".
+exclude_zone_a = false
+
+[rules.parks]
+# Assumption (not law): no statute bars hunting on public land; the owner decides.
+# Public recreation and historic sites are erased on the assumption their owner says no;
+# conservation land is not (DCR land is open to hunting by default, 302 CMR 12.11).
+# PRIM_PURP R = Recreation, H = Historical/Cultural.
+purposes = ["R", "H"]
+# ...when publicly owned (Federal, State, County, Municipal, Public Non-Profit)
+# or open to the public whoever owns it.
+public_owner_types = ["F", "S", "C", "M", "B"]
+also_if_public_access = true
+
+[rules.categories]
+# Who has to say yes, for each surviving acre. Checked in this order.
+# 1. MassWildlife: Department of Fish and Game land (Wildlife Management Areas).
+dfg_owner_abbrevs = ["DFG", "DCRS/DFG"]
+dfg_use_codes = ["911", "921"]
+# 2. Other public land (open-space owner type or exempt use code).
+public_owner_types = ["F", "S", "C", "M", "B", "1", "3"]
+public_use_prefixes = ["900", "91", "92", "93", "97", "98", "99"]
+# 3. Conservation groups and land trusts.
+conservation_owner_types = ["L", "G", "N"]
+# 4. Everything else: private or institutional.
+
+# ---------------------------------------------------------------- local rules
+# Municipal ordinances are not in any statewide dataset. Only towns listed here
+# have local rules applied, on top of the state result; the map says so for every
+# other town. Keys:
+#   firearm_ban  = true   firearm scenarios go to 0 acres
+#   street_ban   = true   archery: every road surface is erased, paved or not
+# Cambridge's section text could not be retrieved independently (Municode blocks
+# automated access); the citations are the talk's. Confirm before relying on them.
+[local.49]
+name = "Cambridge"
+firearm_ban = true     # Cambridge §9.16.010
+street_ban = true      # Cambridge §9.16.060: no bows in streets or on bridges
+note = "Cambridge bans firearm discharge citywide (§9.16.010) and bows in streets and on bridges (§9.16.060)."
+
+# ---------------------------------------------------------------- sources
+[sources]
+s3 = "https://s3.us-east-1.amazonaws.com/download.massgis.digital.mass.gov"
+towns = "shapefiles/state/townssurvey_shp.zip"
+structures = "gdbs/structures_gdb.zip"
+openspace = "shapefiles/state/openspace.zip"
+hydro = "shapefiles/state/hydro25k.zip"
+roads = "shapefiles/state/MassDOT_Roads_SHP.zip"
+zone_a = "shapefiles/state/swp_zones.zip"     # the REST service fails on geometry queries
+parcel_index = "https://arcgisserver.digital.mass.gov/arcgisserver/rest/services/AGOL/L3_FTP_Download/FeatureServer/0/query"
+download_workers = 8
