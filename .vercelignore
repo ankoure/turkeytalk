@@ -1,0 +1,7 @@
+# Allowlist: upload only the built site. Everything else (including ~11 GB of
+# local data in data/) stays home. The site is built locally with
+# `uv run python -m turkey ma web` and committed; Vercel just serves web/.
+/*
+!/web
+!/vercel.json
+/web/src
