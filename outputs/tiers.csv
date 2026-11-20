@@ -1,0 +1,4 @@
+scenario,label,city_ac,dry_land_ac,state_law_ac,state_law_areas,plus_parkland_ac,cambridge_ac,cambridge_areas
+firearm,"Firearm, 500 ft from any building in use",4561.18,4039.55,39.17,8,0.0,0.0,0
+archery_500ft,"Archery, 500 ft from dwellings (current law)",4561.18,4039.55,132.41,25,19.98,19.98,11
+archery_250ft,"Archery, 250 ft from dwellings (pending bill)",4561.18,4039.55,299.34,46,78.23,78.23,32

@@ -1,20 +1,22 @@
-scenario,step,acres_remaining,acres_removed,acres_only_this_rule
-firearm,Cambridge city limits,4561.18,0.0,
-firearm,citywide discharge ban,0.0,4561.18,
-firearm,dwellings,0.0,0.0,
-firearm,parks,0.0,0.0,
-firearm,roads,0.0,0.0,
-firearm,water,0.0,0.0,
-firearm,slivers under 10000 sq ft,0.0,0.0,
-archery_500ft,Cambridge city limits,4561.18,0.0,
-archery_500ft,dwellings,501.48,4059.69,309.75
-archery_500ft,parks,193.53,307.96,76.36
-archery_500ft,roads,132.76,60.77,41.81
-archery_500ft,water,20.12,112.64,112.64
-archery_500ft,slivers under 10000 sq ft,19.98,0.15,
-archery_250ft,Cambridge city limits,4561.18,0.0,
-archery_250ft,dwellings,1014.53,3546.65,251.08
-archery_250ft,parks,518.9,495.62,150.41
-archery_250ft,roads,284.09,234.82,180.36
-archery_250ft,water,78.79,205.29,205.29
-archery_250ft,slivers under 10000 sq ft,78.08,0.71,
+scenario,tier,step,cite,acres_remaining,acres_removed,acres_only_this_rule
+firearm,,Cambridge city limits,,4561.18,0.0,
+firearm,Dry land,open water,Physical,4039.55,521.63,0.0
+firearm,Massachusetts law,buildings + 500 ft,MGL c.269 §12E,53.09,3986.46,0.0
+firearm,Massachusetts law,highways + 150 ft,MGL c.131 §58,39.52,13.58,0.0
+firearm,Not law: landowner,public parkland,Owner assumed to say no,0.0,39.52,0.0
+firearm,Cambridge ordinance,citywide firearm ban,Cambridge §9.16.010,0.0,0.0,0.0
+firearm,,"slivers under 10,000 sq ft",,0.0,0.0,
+archery_500ft,,Cambridge city limits,,4561.18,0.0,
+archery_500ft,Dry land,open water,Physical,4039.55,521.63,112.64
+archery_500ft,Massachusetts law,dwellings + 500 ft,MGL c.131 §58,201.87,3837.68,310.23
+archery_500ft,Massachusetts law,highways + 150 ft,MGL c.131 §58,132.98,68.89,28.56
+archery_500ft,Not law: landowner,public parkland,Owner assumed to say no,20.12,112.86,112.86
+archery_500ft,Cambridge ordinance,"bows in streets, on bridges",Cambridge §9.16.060,20.12,0.0,-0.0
+archery_500ft,,"slivers under 10,000 sq ft",,19.98,0.15,
+archery_250ft,,Cambridge city limits,,4561.18,0.0,
+archery_250ft,Dry land,open water,Physical,4039.55,521.63,205.13
+archery_250ft,Massachusetts law,dwellings + 250 ft,MGL c.131 §58,564.84,3474.7,251.4
+archery_250ft,Massachusetts law,highways + 150 ft,MGL c.131 §58,300.97,263.88,136.47
+archery_250ft,Not law: landowner,public parkland,Owner assumed to say no,78.97,222.0,221.99
+archery_250ft,Cambridge ordinance,"bows in streets, on bridges",Cambridge §9.16.060,78.95,0.01,0.01
+archery_250ft,,"slivers under 10,000 sq ft",,78.23,0.72,
